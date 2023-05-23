@@ -1,7 +1,7 @@
 import api from "../api";
 
 const Login = (data) => {
-  return api.post("/auth", data);
+  return api.post("/authentication_token", data);
 };
 
 const Me = (data) => {

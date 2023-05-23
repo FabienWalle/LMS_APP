@@ -10,13 +10,16 @@ const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const Login = async () => {
-    AsyncStorage.removeItem("token")
+    await AsyncStorage.removeItem('token')
     setLoading(true)
     try {
-      let res = await AuthServices.Login({ email, password })
-      await AsyncStorage.setItem("token", res.data.token)
-      res = await AuthServices.Me();
-      await AsyncStorage.setItem("id", res.data.id.toString());
+      let token = await AsyncStorage.getItem('token')
+      if (!token) {
+        let res = await AuthServices.Login({ username: email, password })
+        await AsyncStorage.setItem("token", res.data.token)
+      }
+      let response = await AuthServices.Me();
+      await AsyncStorage.setItem("id", response.data.id.toString());
       navigation.navigate("BottomTabNavigator")
     } catch (error) {
       console.log(error);

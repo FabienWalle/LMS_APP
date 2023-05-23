@@ -3,7 +3,6 @@ import React from "react";
 import {
   DrawerContentScrollView,
   DrawerItem,
-  Drawer,
 } from "@react-navigation/drawer";
 import { Icon } from "@rneui/themed";
 import AsyncStorage from "@react-native-async-storage/async-storage";

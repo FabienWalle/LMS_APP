@@ -6,15 +6,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useState, useEffect } from "react";
-import AuthServices from "../../api/services/auth.services";
+import CertificationsServices from '../../api/services/certifications.services'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CertificationCoursesScreen = ({ navigation }) => {
   const [CertificationCoursesList, setCertificationCoursesList] = useState();
   const GrabCertificationCourses = async () => {
     try {
-      let res = await AuthServices.Me();
-      res = res.data.userGrades.grade.certificationCourses;
-      setCertificationCoursesList(res);
+      let res = await CertificationsServices.CertificationCourses()
+      let data = res.data.map(item => item)
+      setCertificationCoursesList(data);
     } catch (err) {
       console.log(err);
     }
@@ -32,12 +33,15 @@ const CertificationCoursesScreen = ({ navigation }) => {
           renderItem={({ item }) => (
             <View key={item.id} style={styles.card}>
               <TouchableOpacity
-                onPress={() => {
+                onPress={async () => {
+                  await AsyncStorage.removeItem('Course_id')
+                  let Course_id = item.id
+                  await AsyncStorage.setItem('Course_id', `${Course_id}`)
                   navigation.navigate("CourseScreen");
                 }}>
-                <Text style={styles.title}>{item.course.title}</Text>
-                <Text style={styles.detail}>{item.course.name}</Text>
-                <Text style={styles.detail}>{item.course.picture}</Text>
+                <Text style={styles.title}>{item.name}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.duration}>Durée de la formation : {item.duration}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -56,12 +60,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 50,
+    fontSize: 30,
     fontWeight: "bold",
   },
   detail: {
-    fontSize: 30,
-    color: "red",
+    fontSize: 15
+  },
+  description: {
+    flexWrap: "wrap",
   },
   card: {
     border: 5,
@@ -70,6 +76,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   header: {
+    marginTop: 50,
     fontSize: 30,
     fontWeight: "bold",
   },
